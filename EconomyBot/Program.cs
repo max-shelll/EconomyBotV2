@@ -1,10 +1,12 @@
-﻿using Discord;
-using Discord.Interactions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using EconomyBot.BLL.Services.Handlers;
+using Discord.Interactions;
 using EconomyBot.BLL.Services.Logger;
+using Microsoft.Extensions.Configuration;
 using EconomyBot.DAL.Repositories;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace EconomyBot
 {
@@ -44,12 +46,11 @@ namespace EconomyBot
         {
             _client.Log += LogService.LogAsync; // Подключение логера
             _client.ButtonExecuted += _buttonHandler.MyButtonHandler;
-            _client.Ready += Client_Ready;
 
             await _services.GetRequiredService<InteractionHandler>()
                 .InitializeAsync();
 
-            await _client.LoginAsync(TokenType.Bot, "MTEyNjU4ODI0ODY3MjcwMjU1Nw.G1fm2Z.EspziJYpVt-BNisr328U2JhPvb78AmfLtA6K5Q");
+            await _client.LoginAsync(TokenType.Bot, "MTEyNjgwNzE1NTQ5Mjc4MjE3Mg.GU9Fxi.XDIoxkm259yF1sh03tayJPUyb6uqJ6r0kF3Fu4");
             await _client.StartAsync();
 
 
@@ -63,37 +64,6 @@ namespace EconomyBot
 #else
             return false;
 #endif
-        }
-
-        public Task Client_Ready()
-        {
-            Thread thr = new Thread(SendMsgs);
-            thr.Start();
-            return Task.CompletedTask;
-        }
-
-        private async void SendMsgs()
-        {
-            long time = 120; // Кд на отправку сообщений в минутах
-            var chnl = _client.GetChannel(1061872136412733470) as IMessageChannel; // Id чата куда отправляются сообщения
-
-            var embedBuiler = new EmbedBuilder()
-                   .WithTitle("Система")
-                   .WithDescription($"У вас есть какие то идеи по улучшению сервера, тогда пишите --> \n<#1072025835336368168>")
-                   .WithColor(Color.DarkPurple)
-                   .WithCurrentTimestamp();
-
-            while (true)
-            {
-                while (time != 0)
-                {
-                    Thread.Sleep(60000);
-                    time -= 1;
-                }
-                await chnl.SendMessageAsync(embed: embedBuiler.Build());
-                time = 120;
-
-            }
         }
     }
 }

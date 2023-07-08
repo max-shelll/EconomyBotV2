@@ -1,6 +1,6 @@
-﻿using Discord;
-using Discord.Commands;
+﻿using Discord.Commands;
 using Discord.WebSocket;
+using Discord;
 
 namespace EconomyBot.BLL.Services.Logger
 {

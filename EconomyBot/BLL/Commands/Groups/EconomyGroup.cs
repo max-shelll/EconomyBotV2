@@ -4,6 +4,11 @@ using Discord.WebSocket;
 using EconomyBot.DAL.Models;
 using EconomyBot.DAL.Repositories;
 using MongoDB.Driver;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace EconomyBot.BLL.Commands.Groups
 {

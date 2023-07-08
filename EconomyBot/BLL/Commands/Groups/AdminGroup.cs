@@ -3,6 +3,7 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using EconomyBot.DAL.Models;
 using EconomyBot.DAL.Repositories;
+using MongoDB.Driver;
 
 namespace EconomyBot.BLL.Commands.Groups
 {
