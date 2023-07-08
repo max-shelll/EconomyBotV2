@@ -49,7 +49,7 @@ namespace EconomyBot
             await _services.GetRequiredService<InteractionHandler>()
                 .InitializeAsync();
 
-            await _client.LoginAsync(TokenType.Bot, "MTEyNjU4ODI0ODY3MjcwMjU1Nw.G1fm2Z.EspziJYpVt-BNisr328U2JhPvb78AmfLtA6K5Q");
+            await _client.LoginAsync(TokenType.Bot, "");
             await _client.StartAsync();
 
 
@@ -65,11 +65,10 @@ namespace EconomyBot
 #endif
         }
 
-        public Task Client_Ready()
+        public async  Task Client_Ready()
         {
             Thread thr = new Thread(SendMsgs);
             thr.Start();
-            return Task.CompletedTask;
         }
 
         private async void SendMsgs()
