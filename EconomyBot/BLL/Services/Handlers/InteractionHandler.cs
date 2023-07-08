@@ -1,14 +1,8 @@
-﻿using Discord.Interactions;
+﻿using Discord;
+using Discord.Interactions;
 using Discord.WebSocket;
-using Discord;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using EconomyBot.BLL.Services.Logger;
+using System.Reflection;
 
 namespace EconomyBot.BLL.Services.Handlers
 {
