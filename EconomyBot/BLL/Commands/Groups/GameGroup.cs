@@ -3,13 +3,6 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using EconomyBot.DAL.Models;
 using EconomyBot.DAL.Repositories;
-using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EconomyBot.BLL.Commands.Groups
 {
@@ -340,7 +333,7 @@ namespace EconomyBot.BLL.Commands.Groups
         }
 
         [SlashCommand("black-jack", "Original blackJack")]
-        private async Task BlackJack([Summary(description: "Денежная сумма игры")] long count)
+        private async Task BlackJackCommand([Summary(description: "The money you play with")] long money)
         {
             guildUser = Context.User;
             isDisableBtn = false;
@@ -349,7 +342,7 @@ namespace EconomyBot.BLL.Commands.Groups
             userCount = 0;
             croupCount = 0;
 
-            playCount = count;
+            playCount = money;
             var user = await _userRepo.GetUserById(guildUser.Id);
 
             chnl = Context.Channel;
@@ -454,7 +447,7 @@ namespace EconomyBot.BLL.Commands.Groups
             }
             catch
             {
-                await chnl.SendMessageAsync($"<@{guildUser.Id}>", embed: embedBuiler.Build());
+                await chnl.SendMessageAsync($"<@{guildUser.Id}>", embed: embedBuiler.Build(), components: btnBlackJack.Build());
             }
         }
 
@@ -462,10 +455,16 @@ namespace EconomyBot.BLL.Commands.Groups
         {
             if (!isDisableBtn && croupCount != 0)
             {
+                if (await CheckScores() == true)
+                    return;
+
                 var user = await _userRepo.GetUserById(guildUser.Id);
 
                 while (croupCount < 17 && userCount != 21 && croupCount != 21)
                 {
+                    if (await CheckScores() == true)
+                        return;
+
                     var cropNum = RandomCard();
 
                     var croupCardKey = cards.Keys.ElementAt(cropNum);
@@ -475,13 +474,15 @@ namespace EconomyBot.BLL.Commands.Groups
                     croupCount += cards.Values.ElementAt(cropNum);
                     cards.Remove(croupCardKey);
 
+                    if (await CheckScores() == true)
+                        return;
+
                     _embedGame.AddField(croupCardKey.ToString(), "ᅠ", inline: true);
                     _embedGame.WithDescription("Крупье добирает карты..");
                     _embedGame.WithFooter($"Ваш счет: {userCount}   ᅠᅠᅠᅠ    Счет крупье: {croupCount}");
                     await chnl.SendMessageAsync($"<@{guildUser.Id}>", embed: _embedGame.Build());
                     _embedGame.Fields.Clear();
 
-                    await CheckScores();
                     if (await CheckScores() == true)
                         return;
                 }
@@ -501,6 +502,7 @@ namespace EconomyBot.BLL.Commands.Groups
                     userCards = null;
                     croupCards = null;
                     isDisableBtn = true;
+                    return;
                 }
                 else if (croupCount < userCount)
                 {
@@ -518,6 +520,7 @@ namespace EconomyBot.BLL.Commands.Groups
                     userCards = null;
                     croupCards = null;
                     isDisableBtn = true;
+                    return;
                 }
                 else if (croupCount == userCount)
                 {
@@ -526,9 +529,11 @@ namespace EconomyBot.BLL.Commands.Groups
                     userCards = null;
                     croupCards = null;
                     isDisableBtn = true;
+                    return;
                 }
 
-                await CheckScores();
+                if (await CheckScores() == true)
+                    return;
                 userCount = 0;
                 croupCount = 0;
                 userCards = null;
@@ -552,7 +557,8 @@ namespace EconomyBot.BLL.Commands.Groups
                     var userCardKey = cards.Keys.ElementAt(userNum);
                     var userCardValue = cards.Values.ElementAt(userNum);
 
-                    await CheckScores();
+                    if (await CheckScores() == true)
+                        return;
 
                     var croupCardKey = cards.Keys.ElementAt(cropNum);
                     var croupCardValue = cards.Values.ElementAt(cropNum);
@@ -561,6 +567,9 @@ namespace EconomyBot.BLL.Commands.Groups
                     userCount += cards.Values.ElementAt(userNum);
                     cards.Remove(userCardKey);
                     _embedGame.AddField(userCardKey.ToString(), "ᅠ", inline: true);
+
+                    if (await CheckScores() == true)
+                        return;
 
                     if (croupCards != null)
                     {
@@ -571,7 +580,8 @@ namespace EconomyBot.BLL.Commands.Groups
                     }
                     _embedGame.AddField(croupCardKey.ToString(), "ᅠ", inline: true);
 
-                    await CheckScores();
+                    if (await CheckScores() == true)
+                        return;
 
                     await chnl.SendMessageAsync($"<@{guildUser.Id}>", embed: _embedGame.Build());
                     _embedGame.Fields.Clear();
